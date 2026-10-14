@@ -2,9 +2,8 @@
   publish = "."
 
 [functions]
-  directory = "netlify/functions"
+  directory = "."
 
-# Secours : si /api/ai n'est pas reconnu, il pointe vers la fonction.
 [[redirects]]
   from = "/api/ai"
   to = "/.netlify/functions/ai"
