@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2B3FD6">
+<meta name="description" content="Élan : coach IA forme & nutrition. Programme, plan repas, calories, macros et pas.">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Élan">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Élan – Coach IA forme & nutrition</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDF0F7;--card:#fff;--ink:#14213D;--mut:#6B7592;--line:#DDE2EF;--b:#2B3FD6;--c:#FF4D6D;--g:#12B886;--ring:#E4E8F4;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1226;--card:#171E3A;--ink:#EEF1FB;--mut:#9AA3C4;--line:#262F54;--b:#7C8CFF;--ring:#262F54}}
+:root[data-theme="dark"]{--bg:#0D1226;--card:#171E3A;--ink:#EEF1FB;--mut:#9AA3C4;--line:#262F54;--b:#7C8CFF;--ring:#262F54}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.45 Sora,system-ui,-apple-system,sans-serif;-webkit-tap-highlight-color:transparent}
+#app{max-width:480px;margin:0 auto;padding:14px 16px 96px}
+header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+header h1{font-size:22px;font-weight:800;letter-spacing:-.5px;margin:0;flex:1}
+header small{display:block;font-weight:400;font-size:12px;color:var(--mut);letter-spacing:0}
+.ib{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;width:40px;height:40px;font-size:17px;cursor:pointer}
+.card{background:var(--card);border-radius:22px;padding:16px;margin-bottom:12px;border:1px solid var(--line)}
+.card.hero{background:linear-gradient(140deg,#2B3FD6,#5B3BE0 60%,#FF4D6D);color:#fff;border:0}
+h2{font-size:16px;margin:0 0 10px;font-weight:600}
+.row{display:flex;gap:10px;align-items:center}.row>*{flex:1}
+.mut{color:var(--mut);font-size:13px}
+label{display:block;font-size:12px;color:var(--mut);margin:0 0 4px}
+input,select{width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:16px}
+.f{margin-bottom:10px}
+.btn{border:0;background:var(--b);color:#fff;padding:13px 16px;border-radius:14px;font:600 15px Sora,system-ui,sans-serif;width:100%;cursor:pointer}
+:root[data-theme="dark"] .btn,:root:not([data-theme="light"]) .btn{color:#0D1226}
+.btn.alt{background:var(--c);color:#fff}.btn.ghost{background:transparent;color:var(--b);border:1px solid var(--line)}
+.btn:disabled{opacity:.55}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--c);outline-offset:2px}
+.big{font-size:34px;font-weight:800;letter-spacing:-1px;line-height:1}
+.rings{display:flex;gap:6px;justify-content:space-around;text-align:center}
+.rg{position:relative;width:128px;height:128px;margin:auto}
+.rg svg{transform:rotate(-90deg)}.rg .t{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.rg .t b{font-size:22px;font-weight:800}.rg .t span{font-size:11px;color:var(--mut)}
+.bar{height:9px;border-radius:9px;background:var(--ring);overflow:hidden;margin:5px 0 12px}.bar i{display:block;height:100%;border-radius:9px}
+.mac{display:flex;justify-content:space-between;font-size:13px}
+.chips{display:flex;gap:7px;overflow-x:auto;padding-bottom:8px;margin-bottom:6px}
+.chip{flex:none;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:20px;padding:7px 12px;font:13px Sora,system-ui,sans-serif;cursor:pointer}
+.meal{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.meal:first-of-type{border-top:0}.meal div{flex:1}.meal b{font-weight:600}
+.x{border:0;background:none;color:var(--mut);font-size:18px;cursor:pointer;padding:6px}
+.day{border-top:1px solid var(--line);padding:12px 0}.day:first-of-type{border-top:0}
+.day h3{margin:0 0 6px;font-size:15px}.day li{margin:2px 0;font-size:14px}.day ul{margin:0;padding-left:18px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));z-index:5}
+nav div{display:flex;width:100%;max-width:480px}
+nav button{flex:1;border:0;background:none;color:var(--mut);font:600 11px Sora,system-ui,sans-serif;padding:6px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button span{font-size:21px}nav button.on{color:var(--b)}
+.pill{display:inline-block;background:rgba(255,255,255,.2);border-radius:20px;padding:4px 10px;font-size:12px;margin:3px 4px 0 0}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px}.kv div{background:var(--bg);border-radius:14px;padding:12px}.kv b{display:block;font-size:20px;font-weight:800}
+#toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:14px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9;max-width:90%;text-align:center}
+#toast.on{opacity:1}
+.pulse{animation:p 1.2s infinite}@keyframes p{50%{opacity:.5}}
+@media(prefers-reduced-motion:reduce){.pulse{animation:none}}
+</style></head><body>
+<div id="app">
+<header>
+<svg width="44" height="44" viewBox="0 0 44 44" aria-label="Logo Élan"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2B3FD6"/><stop offset="1" stop-color="#FF4D6D"/></linearGradient></defs><rect width="44" height="44" rx="14" fill="url(#lg)"/><rect x="12" y="11" width="20" height="5" rx="2.5" fill="#fff"/><rect x="12" y="19.5" width="14" height="5" rx="2.5" fill="#fff"/><rect x="12" y="28" width="20" height="5" rx="2.5" fill="#fff"/><circle cx="33" cy="22" r="3" fill="#fff" opacity=".85"/></svg>
+<h1>Élan<small>Ton coach forme & nutrition</small></h1>
+<button class="ib" onclick="share()" aria-label="Partager">⇪</button>
+</header>
+<main id="main"></main>
+</div>
+<nav><div id="nav"></div></nav>
+<div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const today=()=>new Date().toISOString().slice(0,10);
+let S={p:null,days:{},prog:null,plan:null,opt:{j:4,l:'g',n:'i'}},tab='jour',base=null,counting=false,busy=false;
+try{const r=localStorage.getItem('elan');if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+const save=()=>{try{localStorage.setItem('elan',JSON.stringify(S))}catch(e){}};
+const D=()=>S.days[today()]||(S.days[today()]={meals:[],steps:0,water:0});
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2600)};
+const R=Math.round;
+
+function calc(){const p=S.p;if(!p)return null;
+ const bmr=10*p.w+6.25*p.h-5*p.a+(p.s=='m'?5:-161),tdee=bmr*p.act;
+ const k=R(tdee*({perdre:.8,garder:1,prendre:1.1}[p.g]));
+ const pr=R(p.w*({perdre:2.2,garder:1.8,prendre:2}[p.g])),fat=R(p.w*.9),car=Math.max(50,R((k-pr*4-fat*9)/4));
+ return{bmr:R(bmr),tdee:R(tdee),k,pr,fat,car,eau:(p.w*.035).toFixed(1),pas:p.g=='perdre'?10000:8000}}
+
+function ring(v,m,col,big,sub){const c=2*Math.PI*52,o=c*(1-Math.min(1,v/m));
+ return `<div class="rg"><svg width="128" height="128"><circle cx="64" cy="64" r="52" fill="none" stroke="var(--ring)" stroke-width="12"/><circle cx="64" cy="64" r="52" fill="none" stroke="${col}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${o}"/></svg><div class="t"><b>${big}</b><span>${sub}</span></div></div>`}
+
+function totals(){const t={k:0,p:0,g:0,l:0};D().meals.forEach(m=>{t.k+=m.k;t.p+=m.p;t.g+=m.g;t.l+=m.l});return t}
+function mac(n,v,m,col){return `<div class="mac"><span>${n}</span><span><b>${R(v)}</b> / ${m} g</span></div><div class="bar"><i style="width:${Math.min(100,v/m*100)}%;background:${col}"></i></div>`}
+
+function vJour(){const c=calc();
+ if(!c)return `<div class="card hero"><div class="big">Bienvenue 👋</div><p>Renseigne ton profil : Élan calcule ton métabolisme, tes calories et tes protéines, puis ton IA crée ton programme.</p><button class="btn" style="background:#fff;color:#2B3FD6" onclick="go('profil')">Créer mon profil</button></div>`;
+ const t=totals(),d=D(),rest=c.k-R(t.k);
+ return `<div class="card hero"><div class="mut" style="color:#ffffffcc">Salut ${esc(S.p.n||'')} · objectif ${esc(S.p.g)} du poids</div><div class="big" style="margin:6px 0 8px">${rest>=0?rest+' kcal restantes':Math.abs(rest)+' kcal en trop'}</div><span class="pill">Métabolisme ${c.bmr} kcal</span><span class="pill">Cible ${c.k} kcal</span><span class="pill">${c.pr} g protéines</span></div>
+ <div class="card"><div class="rings">${ring(t.k,c.k,'var(--c)',R(t.k),'kcal')}${ring(d.steps,c.pas,'var(--b)','<span id="stp" style="font-size:22px;color:inherit">'+d.steps+'</span>','pas / '+c.pas)}</div>
+ <div class="row" style="margin-top:12px"><button class="btn ${counting?'alt':''}" onclick="toggleSteps()">${counting?'⏹ Arrêter le compteur':'👟 Compter mes pas'}</button><button class="btn ghost" onclick="addSteps(500)">+500</button></div>
+ <p class="mut" style="margin:10px 0 0">${counting?'<span class="pulse">●</span> Garde le téléphone sur toi, écran allumé. ':''}≈ ${R(d.steps*.04)} kcal brûlées. Le capteur dépend de ton téléphone : ajoute à la main si besoin.</p></div>
+ <div class="card"><h2>Macros du jour</h2>${mac('Protéines',t.p,c.pr,'var(--c)')}${mac('Glucides',t.g,c.car,'var(--b)')}${mac('Lipides',t.l,c.fat,'var(--g)')}</div>
+ <div class="card"><h2>Hydratation</h2><div class="row"><div><div class="big">${(d.water*.25).toFixed(2)} L</div><div class="mut">objectif ${c.eau} L</div></div><button class="btn ghost" onclick="water(-1)">−</button><button class="btn" onclick="water(1)">+ verre</button></div></div>`}
+
+const DB=[['Poulet cuit',165,31,0,3.6],['Riz cuit',130,2.7,28,.3],['Œuf',143,12.6,.7,9.5],['Flocons d\'avoine',372,13,60,7],['Banane',89,1.1,23,.3],['Skyr',63,11,4,.2],['Saumon',208,20,0,13],['Pâtes cuites',158,5.8,31,.9],['Pain complet',247,13,41,3.4],['Amandes',579,21,22,50],['Pomme de terre',87,2,20,.1],['Brocoli',34,2.8,7,.4],['Thon nature',116,26,0,1],['Fromage blanc 0%',46,8,4,.2],['Avocat',160,2,9,15],['Lentilles cuites',116,9,20,.4]];
+function vRepas(){const d=D();
+ return `<div class="card"><h2>Ajouter un repas</h2>
+ <div class="chips">${DB.map((f,i)=>`<button class="chip" onclick="setBase(${i})">${esc(f[0])}</button>`).join('')}</div>
+ <div class="f"><label for="mn">Aliment ou repas</label><input id="mn" placeholder="ex : 2 œufs, pain complet et avocat" oninput="base=null"></div>
+ <div class="row f"><div><label for="mg">Quantité (g)</label><input id="mg" type="number" inputmode="decimal" value="100" oninput="fillBase()"></div><div><label for="mt">Moment</label><select id="mt"><option>Petit-déj</option><option>Déjeuner</option><option>Collation</option><option>Dîner</option></select></div></div>
+ <div class="row f"><div><label for="mk">Kcal</label><input id="mk" type="number" inputmode="decimal"></div><div><label for="mp">Prot.</label><input id="mp" type="number" inputmode="decimal"></div><div><label for="mgl">Gluc.</label><input id="mgl" type="number" inputmode="decimal"></div><div><label for="ml">Lip.</label><input id="ml" type="number" inputmode="decimal"></div></div>
+ <div class="row"><button class="btn alt" id="aib" onclick="aiMeal()">✦ Estimer avec l'IA</button><button class="btn" onclick="addMeal()">Ajouter</button></div></div>
+ <div class="card"><h2>Aujourd'hui · ${R(totals().k)} kcal</h2>${d.meals.length?d.meals.map(m=>`<div class="meal"><div><b>${esc(m.n)}</b><div class="mut">${esc(m.t)} · P ${R(m.p)} · G ${R(m.g)} · L ${R(m.l)}</div></div><b>${R(m.k)}</b><button class="x" aria-label="Supprimer" onclick="delMeal(${m.id})">✕</button></div>`).join(''):'<p class="mut">Aucun repas. Choisis un aliment ci-dessus ou décris ton repas et laisse l\'IA estimer les calories.</p>'}</div>`}
+
+function vCoach(){const o=S.opt,c=calc();
+ const sel=(id,v,opts)=>`<select id="${id}">${opts.map(x=>`<option value="${x[0]}" ${x[0]==v?'selected':''}>${x[1]}</option>`).join('')}</select>`;
+ let h=`<div class="card"><h2>Mon programme d'entraînement</h2>
+ <div class="row f"><div><label for="oj">Séances / semaine</label>${sel('oj',o.j,[[3,'3'],[4,'4'],[5,'5'],[6,'6']])}</div><div><label for="ol">Lieu</label>${sel('ol',o.l,[['g','Salle'],['h','Maison']])}</div><div><label for="on">Niveau</label>${sel('on',o.n,[['d','Débutant'],['i','Intermédiaire'],['a','Avancé']])}</div></div>
+ <button class="btn" id="gp" onclick="genProg()">✦ Générer mon programme IA</button>`;
+ if(S.prog)h+=`<div style="margin-top:14px"><b>${esc(S.prog.titre)}</b>${S.prog.jours.map(j=>`<div class="day"><h3>${esc(j.nom)} <span class="mut">· ${esc(j.focus||'')}</span></h3><ul>${j.exos.map(e=>`<li>${esc(e.n)} — <b>${esc(e.s)}</b></li>`).join('')}</ul></div>`).join('')}<p class="mut">${esc(S.prog.conseil||'')}</p></div>`;
+ h+=`</div><div class="card"><h2>Mon plan nutrition</h2>`;
+ if(!c)h+=`<p class="mut">Crée d'abord ton profil pour calculer tes besoins.</p><button class="btn ghost" onclick="go('profil')">Aller au profil</button>`;
+ else{h+=`<p class="mut">Basé sur ${c.k} kcal et ${c.pr} g de protéines par jour.</p><button class="btn alt" id="gn" onclick="genPlan()">✦ Générer mon plan repas IA</button>`;
+  if(S.plan)h+=`<div style="margin-top:14px">${S.plan.repas.map(r=>`<div class="day"><h3>${esc(r.nom)} <span class="mut">· ${R(r.kcal)} kcal · ${R(r.p)} g prot.</span></h3><div>${esc(r.plats)}</div></div>`).join('')}<p class="mut">${esc(S.plan.conseil||'')}</p></div>`}
+ return h+'</div>'}
+
+function vProfil(){const p=S.p||{s:'m',a:28,h:175,w:72,act:1.375,g:'garder',n:''},c=calc();
+ const op=(v,l,cur)=>`<option value="${v}" ${v==cur?'selected':''}>${l}</option>`;
+ return `<div class="card"><h2>Mon profil</h2>
+ <div class="f"><label for="pn">Prénom</label><input id="pn" value="${esc(p.n)}"></div>
+ <div class="row f"><div><label for="ps">Sexe</label><select id="ps">${op('m','Homme',p.s)}${op('f','Femme',p.s)}</select></div><div><label for="pa">Âge</label><input id="pa" type="number" inputmode="numeric" value="${p.a}"></div></div>
+ <div class="row f"><div><label for="ph">Taille (cm)</label><input id="ph" type="number" inputmode="numeric" value="${p.h}"></div><div><label for="pw">Poids (kg)</label><input id="pw" type="number" inputmode="decimal" value="${p.w}"></div></div>
+ <div class="f"><label for="pc">Activité</label><select id="pc">${op(1.2,'Sédentaire (bureau)',p.act)}${op(1.375,'Légère (1-3 séances)',p.act)}${op(1.55,'Modérée (3-5 séances)',p.act)}${op(1.725,'Intense (6-7 séances)',p.act)}</select></div>
+ <div class="f"><label for="pg">Objectif</label><select id="pg">${op('perdre','Perdre du poids',p.g)}${op('garder','Maintenir',p.g)}${op('prendre','Prendre du muscle',p.g)}</select></div>
+ <button class="btn" onclick="saveP()">Calculer mes besoins</button></div>
+ ${c?`<div class="card"><h2>Tes besoins par jour</h2><div class="kv"><div>Métabolisme de base<b>${c.bmr} kcal</b></div><div>Dépense totale<b>${c.tdee} kcal</b></div><div>Calories cible<b>${c.k} kcal</b></div><div>Protéines<b>${c.pr} g</b></div><div>Glucides<b>${c.car} g</b></div><div>Lipides<b>${c.fat} g</b></div><div>Eau<b>${c.eau} L</b></div><div>Pas<b>${c.pas}</b></div></div><p class="mut">Formule Mifflin-St Jeor. Estimation indicative, pas un avis médical.</p></div>`:''}`}
+
+const TABS=[['jour','🏠','Jour'],['repas','🍽','Repas'],['coach','✦','Coach IA'],['profil','👤','Profil']];
+function render(){$('#nav').innerHTML=TABS.map(t=>`<button class="${t[0]==tab?'on':''}" onclick="go('${t[0]}')"><span>${t[1]}</span>${t[2]}</button>`).join('');
+ $('#main').innerHTML={jour:vJour,repas:vRepas,coach:vCoach,profil:vProfil}[tab]()}
+function go(t){tab=t;render();scrollTo(0,0)}
+
+function saveP(){const v=i=>$('#'+i).value,p={n:v('pn').trim(),s:v('ps'),a:+v('pa'),h:+v('ph'),w:+v('pw'),act:+v('pc'),g:v('pg')};
+ if(!(p.a>10&&p.a<100&&p.h>100&&p.h<230&&p.w>30&&p.w<250))return toast('Vérifie âge, taille et poids');
+ S.p=p;save();render();toast('Profil enregistré')}
+function water(n){const d=D();d.water=Math.max(0,d.water+n);save();render()}
+function addSteps(n){D().steps+=n;save();render()}
+function setBase(i){base=DB[i];$('#mn').value=base[0];$('#mg').value=100;fillBase()}
+function fillBase(){if(!base)return;const g=+$('#mg').value||0,f=g/100;$('#mk').value=R(base[1]*f);$('#mp').value=R(base[2]*f*10)/10;$('#mgl').value=R(base[3]*f*10)/10;$('#ml').value=R(base[4]*f*10)/10}
+function addMeal(){const n=$('#mn').value.trim(),k=+$('#mk').value;if(!n||!(k>=0)||$('#mk').value==='')return toast('Ajoute un nom et les calories');
+ D().meals.push({id:Date.now(),n,t:$('#mt').value,k,p:+$('#mp').value||0,g:+$('#mgl').value||0,l:+$('#ml').value||0});save();base=null;render();toast('Repas ajouté')}
+function delMeal(id){const d=D();d.meals=d.meals.filter(m=>m.id!=id);save();render()}
+
+let last=0,lp=0,sv=0;
+function onMotion(e){const a=e.accelerationIncludingGravity;if(!a)return;const m=Math.hypot(a.x||0,a.y||0,a.z||0),t=Date.now();
+ if(m>12.5&&lp<=12.5&&t-last>320){last=t;const d=D();d.steps++;const el=$('#stp');if(el)el.textContent=d.steps;if(++sv%10==0)save()}lp=m}
+async function toggleSteps(){if(counting){counting=false;removeEventListener('devicemotion',onMotion);save();return render()}
+ try{if(window.DeviceMotionEvent&&DeviceMotionEvent.requestPermission&&await DeviceMotionEvent.requestPermission()!=='granted')return toast('Autorisation refusée')}catch(e){}
+ if(!window.DeviceMotionEvent)return toast('Capteur indisponible : ajoute tes pas à la main');
+ counting=true;addEventListener('devicemotion',onMotion);render()}
+
+async function getAI(){
+ try{if(window.claude){const s=await claude.use('sample');if(s)return s}}catch(e){}
+ return{json:async prompt=>{const r=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+  if(!r.ok){const e=new Error('ai');e.code=r.status==429?'rate_limited':'error';throw e}
+  const j=await r.json();return j.data}}}
+async function ask(prompt,btn,label){const ai=await getAI();if(!ai){toast('IA indisponible ici : version de secours utilisée');return null}
+ const b=$('#'+btn);b.disabled=true;b.textContent='Réflexion…';
+ try{return await ai.json(prompt+'\nRéponds uniquement avec du JSON valide, en français, sans texte autour.')}
+ catch(e){toast(e&&e.code=='not_granted'?'IA non autorisée : version de secours utilisée':'L\'IA n\'a pas répondu : version de secours utilisée');return null}
+ finally{b.disabled=false;b.textContent=label}}
+
+async function aiMeal(){const q=$('#mn').value.trim();if(!q)return toast('Décris ton repas d\'abord');
+ const r=await ask(`Estime les valeurs nutritionnelles totales de ce repas (quantité ${$('#mg').value||'normale'} g si c'est un seul aliment) : "${q}". Format : {"kcal":nombre,"p":nombre,"g":nombre,"l":nombre} avec p, g, l en grammes de protéines, glucides, lipides.`,'aib','✦ Estimer avec l\'IA');
+ if(r&&r.kcal>=0){base=null;$('#mk').value=R(r.kcal);$('#mp').value=R(r.p||0);$('#mgl').value=R(r.g||0);$('#ml').value=R(r.l||0);toast('Estimation IA prête, ajuste si besoin')}}
+
+const EX={push:{g:['Développé couché|4x8','Développé incliné haltères|3x10','Élévations latérales|3x15','Extensions triceps poulie|3x12'],h:['Pompes|4xmax','Pompes déclinées|3x12','Pike push-ups|3x10','Dips sur chaise|3x12']},pull:{g:['Tractions assistées|4x8','Rowing barre|4x10','Tirage poitrine|3x12','Curl biceps|3x12'],h:['Rowing élastique|4x12','Tractions australiennes|4x10','Curl élastique|3x15','Superman|3x15']},legs:{g:['Squat|4x8','Presse à cuisses|3x12','Soulevé de terre roumain|3x10','Mollets debout|4x15'],h:['Squat bulgare|4x10','Fentes marchées|3x12','Pont fessier|4x15','Mollets unilatéraux|4x15']},full:{g:['Squat|3x8','Développé couché|3x8','Rowing haltère|3x10','Gainage|3x45 s'],h:['Squat|3x15','Pompes|3x12','Rowing élastique|3x12','Gainage|3x45 s']},cardio:{g:['Marche rapide / vélo|40 min','Gainage|3x45 s'],h:['Marche rapide|40 min','Gainage|3x45 s']}};
+const LB={push:['Poussée','Pectoraux, épaules, triceps'],pull:['Tirage','Dos, biceps'],legs:['Jambes','Quadriceps, fessiers'],full:['Full body','Tout le corps'],cardio:['Cardio & gainage','Endurance, abdos']};
+const SPL={3:['full','full','full'],4:['push','legs','pull','full'],5:['push','pull','legs','full','cardio'],6:['push','pull','legs','push','pull','legs']};
+function localProg(o){const g=o.l=='g'?'g':'h';return{titre:`Programme ${o.j} jours · ${g=='g'?'salle':'maison'}`,jours:SPL[o.j].map((k,i)=>({nom:`Jour ${i+1} · ${LB[k][0]}`,focus:LB[k][1],exos:EX[k][g].map(x=>{const a=x.split('|');return{n:a[0],s:a[1]}})})),conseil:'Augmente les charges ou les répétitions dès que tu fais toutes les séries proprement. Dors 7 à 8 h.'}}
+async function genProg(){const o=S.opt={j:+$('#oj').value,l:$('#ol').value,n:$('#on').value},p=S.p,c=calc();
+ const r=await ask(`Crée un programme de musculation de ${o.j} séances par semaine, lieu : ${o.l=='g'?'salle de sport':'maison, peu de matériel'}, niveau ${({d:'débutant',i:'intermédiaire',a:'avancé'})[o.n]}${p?`, objectif ${p.g} du poids, ${p.w} kg`:''}. Format : {"titre":"...","jours":[{"nom":"Jour 1 · ...","focus":"muscles ciblés","exos":[{"n":"exercice","s":"4x10"}]}],"conseil":"..."} avec exactement ${o.j} jours et 4 à 6 exercices par jour.`,'gp','✦ Générer mon programme IA');
+ S.prog=r&&Array.isArray(r.jours)&&r.jours.length&&r.jours.every(j=>Array.isArray(j.exos))?r:localProg(o);save();render()}
+
+function localPlan(c){const sp=[['Petit-déjeuner',.25,'Flocons d\'avoine, skyr, banane et amandes'],['Déjeuner',.35,'Poulet ou poisson, riz ou pâtes, légumes, huile d\'olive'],['Collation',.1,'Fromage blanc 0 % et fruit'],['Dîner',.3,'Œufs ou saumon, pommes de terre, légumes verts']];
+ return{repas:sp.map(s=>({nom:s[0],plats:s[2],kcal:c.k*s[1],p:c.pr*s[1]})),conseil:`Bois ${c.eau} L d'eau par jour et répartis tes protéines sur chaque repas.`}}
+async function genPlan(){const c=calc(),p=S.p;
+ const r=await ask(`Crée un plan nutrition pour une journée type : ${c.k} kcal, ${c.pr} g protéines, ${c.car} g glucides, ${c.fat} g lipides, objectif ${p.g} du poids, réaliste et facile à cuisiner. Format : {"repas":[{"nom":"Petit-déjeuner","plats":"description avec quantités","kcal":nombre,"p":nombre}],"conseil":"..."} avec 4 repas dont la somme des kcal ≈ ${c.k}.`,'gn','✦ Générer mon plan repas IA');
+ S.plan=r&&Array.isArray(r.repas)&&r.repas.length&&r.repas.every(x=>x.nom&&x.plats&&x.kcal>=0)?r:localPlan(c);save();render()}
+
+async function share(){const u=location.href,d={title:'Élan',text:'Essaie Élan : coach IA forme & nutrition',url:u};
+ try{if(navigator.share)return await navigator.share(d)}catch(e){return}
+ try{await navigator.clipboard.writeText(u);toast('Lien copié')}catch(e){toast('Copie le lien dans la barre d\'adresse')}}
+render();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+</script></body></html>
