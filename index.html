@@ -60,6 +60,8 @@ nav button span{font-size:21px}nav button.on{color:var(--b)}
 #toast.on{opacity:1}
 .pulse{animation:p 1.2s infinite}@keyframes p{50%{opacity:.5}}
 @media(prefers-reduced-motion:reduce){.pulse{animation:none}}
+#scan{position:fixed;inset:0;background:#000;z-index:20;display:none;flex-direction:column}#scan.on{display:flex}#scan video{flex:1;width:100%;min-height:0;object-fit:cover}
+.sb{display:flex;gap:8px;padding:14px;background:#000;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}.sb input{flex:1;min-width:0}.sb .btn{width:auto}
 </style></head><body>
 <div id="app">
 <header>
@@ -70,6 +72,7 @@ nav button span{font-size:21px}nav button.on{color:var(--b)}
 <main id="main"></main>
 </div>
 <nav><div id="nav"></div></nav>
+<div id="scan"><video id="sv" playsinline muted></video><div class="sb"><input id="sc" inputmode="numeric" placeholder="ou tape le code-barres"><button class="btn" onclick="lookup($('#sc').value)">OK</button><button class="btn ghost" style="color:#fff" onclick="stopScan()">Fermer</button></div></div>
 <div id="toast"></div>
 <script>
 const $=s=>document.querySelector(s);
@@ -107,6 +110,7 @@ function vJour(){const c=calc();
 const DB=[['Poulet cuit',165,31,0,3.6],['Riz cuit',130,2.7,28,.3],['Œuf',143,12.6,.7,9.5],['Flocons d\'avoine',372,13,60,7],['Banane',89,1.1,23,.3],['Skyr',63,11,4,.2],['Saumon',208,20,0,13],['Pâtes cuites',158,5.8,31,.9],['Pain complet',247,13,41,3.4],['Amandes',579,21,22,50],['Pomme de terre',87,2,20,.1],['Brocoli',34,2.8,7,.4],['Thon nature',116,26,0,1],['Fromage blanc 0%',46,8,4,.2],['Avocat',160,2,9,15],['Lentilles cuites',116,9,20,.4]];
 function vRepas(){const d=D();
  return `<div class="card"><h2>Ajouter un repas</h2>
+ <div class="row f"><button class="btn ghost" onclick="scanCode()">▦ Scanner un code-barres</button><button class="btn ghost" onclick="$('#pic').click()">📸 Photo du repas</button></div><input id="pic" type="file" accept="image/*" capture="environment" hidden onchange="photoMeal(this)">
  <div class="chips">${DB.map((f,i)=>`<button class="chip" onclick="setBase(${i})">${esc(f[0])}</button>`).join('')}</div>
  <div class="f"><label for="mn">Aliment ou repas</label><input id="mn" placeholder="ex : 2 œufs, pain complet et avocat" oninput="base=null"></div>
  <div class="row f"><div><label for="mg">Quantité (g)</label><input id="mg" type="number" inputmode="decimal" value="100" oninput="fillBase()"></div><div><label for="mt">Moment</label><select id="mt"><option>Petit-déj</option><option>Déjeuner</option><option>Collation</option><option>Dîner</option></select></div></div>
@@ -160,6 +164,38 @@ async function toggleSteps(){if(counting){counting=false;removeEventListener('de
  try{if(window.DeviceMotionEvent&&DeviceMotionEvent.requestPermission&&await DeviceMotionEvent.requestPermission()!=='granted')return toast('Autorisation refusée')}catch(e){}
  if(!window.DeviceMotionEvent)return toast('Capteur indisponible : ajoute tes pas à la main');
  counting=true;addEventListener('devicemotion',onMotion);render()}
+
+
+let stream=null,scanTimer=null,zx=null,looking=false;
+function loadZX(){return window.ZXing?Promise.resolve():new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';s.onload=ok;s.onerror=ko;document.head.appendChild(s)})}
+async function scanCode(){
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return toast('Caméra indisponible : tape le code à la main');
+ $('#scan').classList.add('on');const v=$('#sv');
+ try{
+  if('BarcodeDetector' in window){
+   stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});v.srcObject=stream;await v.play();
+   const det=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e']});
+   scanTimer=setInterval(async()=>{try{const r=await det.detect(v);if(r.length)lookup(r[0].rawValue)}catch(e){}},400);
+  }else{await loadZX();zx=new ZXing.BrowserMultiFormatReader();zx.decodeFromVideoDevice(undefined,'sv',r=>{if(r)lookup(r.getText())})}
+ }catch(e){toast('Caméra refusée ou indisponible : tape le code à la main')}}
+function stopScan(){clearInterval(scanTimer);scanTimer=null;if(zx){try{zx.reset()}catch(e){}zx=null}if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$('#scan').classList.remove('on')}
+async function lookup(code){code=String(code||'').replace(/\D/g,'');if(code.length<8||looking)return;looking=true;
+ try{const r=await fetch('https://world.openfoodfacts.org/api/v2/product/'+code+'.json?fields=product_name,brands,nutriments,serving_quantity');const j=await r.json();
+  if(j.status!==1||!j.product)throw 0;const p=j.product,n=p.nutriments||{};
+  const kc=n['energy-kcal_100g']!=null?+n['energy-kcal_100g']:(n['energy_100g']!=null?n['energy_100g']/4.184:null);
+  if(kc==null||isNaN(kc))throw 1;
+  stopScan();
+  base=[((p.product_name||'Produit')+(p.brands?' – '+p.brands.split(',')[0]:'')).trim(),kc,+n.proteins_100g||0,+n.carbohydrates_100g||0,+n.fat_100g||0];
+  $('#mn').value=base[0];$('#mg').value=R(+p.serving_quantity)||100;fillBase();toast('Produit trouvé : ajuste la quantité');
+ }catch(e){toast('Produit introuvable : décris-le ou prends-le en photo')}
+ setTimeout(()=>looking=false,2500)}
+async function photoMeal(inp){const f=inp.files[0];inp.value='';if(!f)return;toast('Analyse de la photo…');
+ try{const img=await new Promise((ok,ko)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=ko;i.src=URL.createObjectURL(f)});
+  const k=Math.min(1,900/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+  const r=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:c.toDataURL('image/jpeg',.8)})});
+  if(!r.ok)throw 0;const j=(await r.json()).data;if(!j||!(j.kcal>=0))throw 1;
+  base=null;$('#mn').value=j.nom||'Repas (photo)';$('#mk').value=R(j.kcal);$('#mp').value=R(j.p||0);$('#mgl').value=R(j.g||0);$('#ml').value=R(j.l||0);toast('Estimation par photo prête : vérifie et ajuste');
+ }catch(e){toast('Photo non analysée : décris ton repas pour une estimation IA')}}
 
 async function getAI(){
  try{if(window.claude){const s=await claude.use('sample');if(s)return s}}catch(e){}

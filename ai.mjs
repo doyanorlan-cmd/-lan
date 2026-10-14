@@ -12,7 +12,35 @@ export default async (req) => {
   if (allowed && o && o !== allowed) return J({ error: 'forbidden' }, 403);
   let body; try { body = await req.json(); } catch { return J({ error: 'bad_json' }, 400); }
   const prompt = String(body.prompt || '').slice(0, 4000);
-  if (!prompt) return J({ error: 'empty' }, 400);
+  if (!prompt && !body.image) return J({ error: 'empty' }, 400);
+
+  if (body.image) {
+    if (!groq) return J({ error: 'no_vision' }, 501);
+    const img = String(body.image);
+    if (!img.startsWith('data:image/') || img.length > 3000000) return J({ error: 'bad_image' }, 400);
+    const key = groq.trim();
+    const vp = "Tu es nutritionniste. Analyse la photo de ce repas, estime les portions visibles et donne les valeurs totales. Réponds uniquement en JSON : {\"nom\":\"nom court du plat en français\",\"kcal\":nombre,\"p\":nombre,\"g\":nombre,\"l\":nombre} avec p, g, l en grammes de protéines, glucides, lipides.";
+    let cands = [E('GROQ_VISION_MODEL'), 'meta-llama/llama-4-scout-17b-16e-instruct'];
+    try {
+      const ml = await fetch('https://api.groq.com/openai/v1/models', { headers: { Authorization: 'Bearer ' + key } });
+      if (ml.ok) { const ids = ((await ml.json()).data || []).map(m => m.id); console.error('GROQ_VISION_CANDIDATES', ids.join(', ').slice(0, 600)); cands.push(...ids.filter(i => /llama-4|scout|maverick|vision|-vl|llava/i.test(i) && !/guard/i.test(i))); }
+    } catch {}
+    cands = cands.filter((m, i, a) => m && a.indexOf(m) === i).slice(0, 4);
+    for (const model of cands) {
+      for (const fmt of [true, false]) {
+        const x = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key },
+          body: JSON.stringify({ model, messages: [{ role: 'user', content: [{ type: 'text', text: vp }, { type: 'image_url', image_url: { url: img } }] }], ...(fmt ? { response_format: { type: 'json_object' } } : {}), temperature: 0.3 })
+        });
+        if (x.ok) { const d = parse((await x.json()).choices?.[0]?.message?.content); if (d) return J({ data: d }); continue; }
+        console.error('GROQ_VISION_ERROR', model, fmt ? 'json' : 'plain', x.status, (await x.text()).slice(0, 300));
+        if (x.status === 429) return J({ error: 'rate_limited' }, 429);
+        if (x.status !== 400) break;
+      }
+    }
+    return J({ error: 'vision_unavailable' }, 502);
+  }
 
   let r, text;
   if (groq) {
